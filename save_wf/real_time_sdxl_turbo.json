@@ -1,0 +1,734 @@
+{
+  "last_node_id": 38,
+  "last_link_id": 74,
+  "nodes": [
+    {
+      "id": 5,
+      "type": "EmptyLatentImage",
+      "pos": {
+        "0": 107,
+        "1": 606
+      },
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            23
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        512,
+        512,
+        1
+      ]
+    },
+    {
+      "id": 14,
+      "type": "KSamplerSelect",
+      "pos": {
+        "0": -53,
+        "1": 158
+      },
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "SAMPLER",
+          "type": "SAMPLER",
+          "links": [
+            18
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerSelect"
+      },
+      "widgets_values": [
+        "euler_ancestral"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "SamplerCustom",
+      "pos": {
+        "0": 414,
+        "1": 152
+      },
+      "size": {
+        "0": 355.20001220703125,
+        "1": 230
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 41,
+          "slot_index": 0
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 19,
+          "slot_index": 1
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 20
+        },
+        {
+          "name": "sampler",
+          "type": "SAMPLER",
+          "link": 18,
+          "slot_index": 3
+        },
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 49,
+          "slot_index": 4
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 23,
+          "slot_index": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            28
+          ],
+          "slot_index": 0,
+          "shape": 3
+        },
+        {
+          "name": "denoised_output",
+          "type": "LATENT",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SamplerCustom"
+      },
+      "widgets_values": [
+        true,
+        0,
+        "fixed",
+        1
+      ]
+    },
+    {
+      "id": 8,
+      "type": "VAEDecode",
+      "pos": {
+        "0": 783,
+        "1": -42
+      },
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 28
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 40,
+          "slot_index": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            56,
+            59
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 35,
+      "type": "UpscaleModelLoader",
+      "pos": {
+        "0": 799,
+        "1": 293
+      },
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "UPSCALE_MODEL",
+          "type": "UPSCALE_MODEL",
+          "links": [
+            63
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UpscaleModelLoader"
+      },
+      "widgets_values": [
+        "4xUltrasharp_4xUltrasharpV10.pt"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CLIPTextEncode",
+      "pos": {
+        "0": -107,
+        "1": 391
+      },
+      "size": {
+        "0": 425.27801513671875,
+        "1": 180.6060791015625
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            20,
+            61
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "no modern technology, no futuristic elements, no neon lights, no contemporary furniture, no plastic, no vehicles, no bright daylight, no sci-fi details, no electronic devices, no modern bar items, no overly clean or polished surfaces, no smooth metal, no characters, no modern drinks or glassware, no cityscape, no overly bright or colorful elements, no clutter or random objects, no modern clothing or accessories."
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 22,
+      "type": "SDTurboScheduler",
+      "pos": {
+        "0": -53,
+        "1": 269
+      },
+      "size": {
+        "0": 315,
+        "1": 82
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 45,
+          "slot_index": 0
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            49
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SDTurboScheduler"
+      },
+      "widgets_values": [
+        4,
+        1
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CheckpointLoaderSimple",
+      "pos": {
+        "0": -519,
+        "1": 248
+      },
+      "size": {
+        "0": 343.69647216796875,
+        "1": 98
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            41,
+            45,
+            64
+          ],
+          "slot_index": 0,
+          "shape": 3
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            38,
+            39
+          ],
+          "slot_index": 1,
+          "shape": 3
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            40,
+            62
+          ],
+          "slot_index": 2,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "SDXL-TURBO\\sd_xl_turbo_1.0_fp16.safetensors"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": {
+        "0": 221,
+        "1": -118
+      },
+      "size": {
+        "0": 422.84503173828125,
+        "1": 164.31304931640625
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 38,
+          "slot_index": 0
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            19,
+            60
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "A large, dimly lit room in a fantasy setting, 100 feet wide and 50 feet deep, with high vaulted ceilings. Rows of flickering torches line the stone walls, casting dancing shadows that move erratically. Above, a large animal-bone chandelier sways gently, adding a rustic and eerie touch to the atmosphere. The room's left side features a long, weathered wooden bar, halfway filled with various bottles, tankards, and medieval decor. The right side of the room is bustling with lively dwarves, their thick beards and sturdy build reflecting the culture of the fantasy realm. The stone floor is worn and rough, adding to the room's ancient and rugged feel. The air is filled with the rhythmic pounding of metal and the distant sounds of cheering and booing, creating a lively, yet gritty tavern atmosphere. Warm, earthy tones and shadows dominate the scene, with a sense of camaraderie and festive energy."
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 34,
+      "type": "UltimateSDUpscale",
+      "pos": {
+        "0": 1202,
+        "1": -69
+      },
+      "size": {
+        "0": 315,
+        "1": 614
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 59
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 64
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 60
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 61
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 62
+        },
+        {
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
+          "link": 63
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            74
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UltimateSDUpscale"
+      },
+      "widgets_values": [
+        2,
+        471161995482271,
+        "fixed",
+        3,
+        1,
+        "euler_ancestral",
+        "sgm_uniform",
+        0.2,
+        "Linear",
+        512,
+        512,
+        8,
+        32,
+        "None",
+        1,
+        64,
+        8,
+        16,
+        true,
+        false
+      ]
+    },
+    {
+      "id": 38,
+      "type": "PreviewImage",
+      "pos": {
+        "0": 980,
+        "1": 652
+      },
+      "size": {
+        "0": 630.7332763671875,
+        "1": 640.406005859375
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 74
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 25,
+      "type": "PreviewImage",
+      "pos": {
+        "0": 474,
+        "1": 670
+      },
+      "size": [
+        519.4906878576871,
+        552.7047290260834
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 56
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      18,
+      14,
+      0,
+      13,
+      3,
+      "SAMPLER"
+    ],
+    [
+      19,
+      6,
+      0,
+      13,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      20,
+      7,
+      0,
+      13,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      23,
+      5,
+      0,
+      13,
+      5,
+      "LATENT"
+    ],
+    [
+      28,
+      13,
+      0,
+      8,
+      0,
+      "LATENT"
+    ],
+    [
+      38,
+      20,
+      1,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      39,
+      20,
+      1,
+      7,
+      0,
+      "CLIP"
+    ],
+    [
+      40,
+      20,
+      2,
+      8,
+      1,
+      "VAE"
+    ],
+    [
+      41,
+      20,
+      0,
+      13,
+      0,
+      "MODEL"
+    ],
+    [
+      45,
+      20,
+      0,
+      22,
+      0,
+      "MODEL"
+    ],
+    [
+      49,
+      22,
+      0,
+      13,
+      4,
+      "SIGMAS"
+    ],
+    [
+      56,
+      8,
+      0,
+      25,
+      0,
+      "IMAGE"
+    ],
+    [
+      59,
+      8,
+      0,
+      34,
+      0,
+      "IMAGE"
+    ],
+    [
+      60,
+      6,
+      0,
+      34,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      61,
+      7,
+      0,
+      34,
+      3,
+      "CONDITIONING"
+    ],
+    [
+      62,
+      20,
+      2,
+      34,
+      4,
+      "VAE"
+    ],
+    [
+      63,
+      35,
+      0,
+      34,
+      5,
+      "UPSCALE_MODEL"
+    ],
+    [
+      64,
+      20,
+      0,
+      34,
+      1,
+      "MODEL"
+    ],
+    [
+      74,
+      34,
+      0,
+      38,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [
+    {
+      "title": "Unmute (CTRL-M) if you want to save images.",
+      "bounding": [
+        1726,
+        82,
+        569,
+        618
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5054470284993214,
+      "offset": [
+        110.49254903081965,
+        14.58505996213421
+      ]
+    }
+  },
+  "version": 0.4
+}

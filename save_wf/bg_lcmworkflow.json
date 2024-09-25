@@ -1,0 +1,707 @@
+{
+  "last_node_id": 21,
+  "last_link_id": 50,
+  "nodes": [
+    {
+      "id": 5,
+      "type": "EmptyLatentImage",
+      "pos": {
+        "0": 485,
+        "1": 847
+      },
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            2
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        1024,
+        1024,
+        1
+      ]
+    },
+    {
+      "id": 20,
+      "type": "PreviewImage",
+      "pos": {
+        "0": 2120,
+        "1": 825
+      },
+      "size": {
+        "0": 1272.6512451171875,
+        "1": 1105.83056640625
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 45
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 18,
+      "type": "UltimateSDUpscale",
+      "pos": {
+        "0": 2219,
+        "1": 131
+      },
+      "size": {
+        "0": 315,
+        "1": 614
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 43
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 46
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 39
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 40
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 41
+        },
+        {
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            45
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UltimateSDUpscale"
+      },
+      "widgets_values": [
+        2,
+        934206600444646,
+        "randomize",
+        4,
+        1,
+        "lcm",
+        "sgm_uniform",
+        0.2,
+        "Linear",
+        1024,
+        1024,
+        8,
+        32,
+        "None",
+        1,
+        64,
+        8,
+        16,
+        true,
+        false
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CheckpointLoaderSimple",
+      "pos": {
+        "0": -360,
+        "1": 463
+      },
+      "size": {
+        "0": 315,
+        "1": 98
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            17
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            18
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            36,
+            41
+          ],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "theAllysMixXSDXL_v10.safetensors"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "KSampler",
+      "pos": {
+        "0": 975,
+        "1": 115
+      },
+      "size": {
+        "0": 315,
+        "1": 262
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 49
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 38
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 6
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            7
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        641207502999946,
+        "fixed",
+        4,
+        1,
+        "lcm",
+        "sgm_uniform",
+        1
+      ]
+    },
+    {
+      "id": 8,
+      "type": "VAEDecode",
+      "pos": {
+        "0": 1347,
+        "1": 217
+      },
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 7
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            10,
+            43
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 19,
+      "type": "UpscaleModelLoader",
+      "pos": {
+        "0": 1898,
+        "1": 320
+      },
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 4,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "UPSCALE_MODEL",
+          "type": "UPSCALE_MODEL",
+          "links": [
+            44
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UpscaleModelLoader"
+      },
+      "widgets_values": [
+        "4xUltrasharp_4xUltrasharpV10.pt"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "ModelSamplingDiscrete",
+      "pos": {
+        "0": 492,
+        "1": 445
+      },
+      "size": {
+        "0": 315,
+        "1": 82
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            46,
+            49
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ModelSamplingDiscrete"
+      },
+      "widgets_values": [
+        "eps",
+        false
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CLIPTextEncode",
+      "pos": {
+        "0": 429,
+        "1": 616
+      },
+      "size": {
+        "0": 420.95928955078125,
+        "1": 155.5133056640625
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 50
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            6,
+            40
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "CLIP Text Encode (Negative)",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "no modern technology, no futuristic elements, no neon lights, no contemporary furniture, no plastic, no vehicles, no bright daylight, no sci-fi details, no electronic devices, no modern bar items, no overly clean or polished surfaces, no smooth metal, no characters, no modern drinks or glassware, no cityscape, no overly bright or colorful elements, no clutter or random objects, no modern clothing or accessories."
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 15,
+      "type": "LoraLoader",
+      "pos": {
+        "0": 13,
+        "1": 443
+      },
+      "size": {
+        "0": 315,
+        "1": 126
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 17
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            24
+          ],
+          "slot_index": 0,
+          "shape": 3
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            35,
+            50
+          ],
+          "slot_index": 1,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraLoader"
+      },
+      "widgets_values": [
+        "lcm_lora_sdxl.safetensors",
+        1,
+        1
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": {
+        "0": 419,
+        "1": 208
+      },
+      "size": {
+        "0": 422.84503173828125,
+        "1": 164.31304931640625
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 35
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            38,
+            39
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "CLIP Text Encode (Positive)",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "A secret pirate hideout nestled within a rocky cove, with ancient ships anchored by the shore, their sails torn and weathered. The cove is surrounded by jagged cliffs and dark storm clouds brewing overhead, with flashes of lightning illuminating the scene. Wooden docks lead to a bustling tavern built into the cliffs, and treasure chests filled with gold and jewels are scattered across the beach. The air smells of saltwater and danger."
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 10,
+      "type": "PreviewImage",
+      "pos": {
+        "0": 981,
+        "1": 466
+      },
+      "size": [
+        1037.0851309669774,
+        1049.0664875897114
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 10
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      2,
+      5,
+      0,
+      3,
+      3,
+      "LATENT"
+    ],
+    [
+      6,
+      7,
+      0,
+      3,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      7,
+      3,
+      0,
+      8,
+      0,
+      "LATENT"
+    ],
+    [
+      10,
+      8,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      4,
+      0,
+      15,
+      0,
+      "MODEL"
+    ],
+    [
+      18,
+      4,
+      1,
+      15,
+      1,
+      "CLIP"
+    ],
+    [
+      24,
+      15,
+      0,
+      16,
+      0,
+      "MODEL"
+    ],
+    [
+      35,
+      15,
+      1,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      36,
+      4,
+      2,
+      8,
+      1,
+      "VAE"
+    ],
+    [
+      38,
+      6,
+      0,
+      3,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      39,
+      6,
+      0,
+      18,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      40,
+      7,
+      0,
+      18,
+      3,
+      "CONDITIONING"
+    ],
+    [
+      41,
+      4,
+      2,
+      18,
+      4,
+      "VAE"
+    ],
+    [
+      43,
+      8,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      44,
+      19,
+      0,
+      18,
+      5,
+      "UPSCALE_MODEL"
+    ],
+    [
+      45,
+      18,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      46,
+      16,
+      0,
+      18,
+      1,
+      "MODEL"
+    ],
+    [
+      49,
+      16,
+      0,
+      3,
+      0,
+      "MODEL"
+    ],
+    [
+      50,
+      15,
+      1,
+      7,
+      0,
+      "CLIP"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6115909044841464,
+      "offset": [
+        180.50609618985098,
+        46.57730133874245
+      ]
+    }
+  },
+  "version": 0.4
+}
