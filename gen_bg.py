@@ -114,6 +114,80 @@ def import_custom_nodes() -> None:
 
 from nodes import NODE_CLASS_MAPPINGS
 
+def load_models():
+    import_custom_nodes()
+    with torch.inference_mode():
+        checkpointloadersimple = NODE_CLASS_MAPPINGS["CheckpointLoaderSimple"]()
+        checkpointloadersimple_4 = checkpointloadersimple.load_checkpoint(
+            ckpt_name="theAllysMixXSDXL_v10.safetensors"
+        )
+
+        emptylatentimage = NODE_CLASS_MAPPINGS["EmptyLatentImage"]()
+        emptylatentimage_5 = emptylatentimage.generate(
+            width=1024, height=1024, batch_size=1
+        )
+
+        loraloader = NODE_CLASS_MAPPINGS["LoraLoader"]()
+        loraloader_15 = loraloader.load_lora(
+            lora_name="lcm_lora_sdxl.safetensors",
+            strength_model=1,
+            strength_clip=1,
+            model=get_value_at_index(checkpointloadersimple_4, 0),
+            clip=get_value_at_index(checkpointloadersimple_4, 1),
+        )
+
+        cliptextencode = NODE_CLASS_MAPPINGS["CLIPTextEncode"]()
+        modelsamplingdiscrete = NODE_CLASS_MAPPINGS["ModelSamplingDiscrete"]()
+        ksampler = NODE_CLASS_MAPPINGS["KSampler"]()
+        vaedecode = NODE_CLASS_MAPPINGS["VAEDecode"]()
+        saveimage = NODE_CLASS_MAPPINGS["SaveImage"]()
+
+        return loraloader_15, emptylatentimage_5,checkpointloadersimple_4, cliptextencode, modelsamplingdiscrete, ksampler, vaedecode, saveimage
+
+def gen_pic(positive_prompt,loraloader_15, emptylatentimage_5,checkpointloadersimple_4,cliptextencode, modelsamplingdiscrete, ksampler, vaedecode, saveimage):
+    with torch.inference_mode():
+        # cliptextencode = NODE_CLASS_MAPPINGS["CLIPTextEncode"]()
+        cliptextencode_6 = cliptextencode.encode(
+            text=positive_prompt,
+            clip=get_value_at_index(loraloader_15, 1),
+        )
+
+        cliptextencode_7 = cliptextencode.encode(
+            text="no modern technology, no futuristic elements, no neon lights, no contemporary furniture, no plastic, no vehicles, no bright daylight, no sci-fi details, no electronic devices, no modern bar items, no overly clean or polished surfaces, no smooth metal, no characters, no modern drinks or glassware, no cityscape, no overly bright or colorful elements, no clutter or random objects, no modern clothing or accessories.",
+            clip=get_value_at_index(loraloader_15, 1),
+        )
+
+        # modelsamplingdiscrete = NODE_CLASS_MAPPINGS["ModelSamplingDiscrete"]()
+        # ksampler = NODE_CLASS_MAPPINGS["KSampler"]()
+        # vaedecode = NODE_CLASS_MAPPINGS["VAEDecode"]()
+        # saveimage = NODE_CLASS_MAPPINGS["SaveImage"]()
+
+        for q in range(1):
+            modelsamplingdiscrete_16 = modelsamplingdiscrete.patch(
+                sampling="eps", zsnr=False, model=get_value_at_index(loraloader_15, 0)
+            )
+
+            ksampler_3 = ksampler.sample(
+                seed=random.randint(1, 2**64),
+                steps=4,
+                cfg=1,
+                sampler_name="lcm",
+                scheduler="sgm_uniform",
+                denoise=1,
+                model=get_value_at_index(modelsamplingdiscrete_16, 0),
+                positive=get_value_at_index(cliptextencode_6, 0),
+                negative=get_value_at_index(cliptextencode_7, 0),
+                latent_image=get_value_at_index(emptylatentimage_5, 0),
+            )
+
+            vaedecode_8 = vaedecode.decode(
+                samples=get_value_at_index(ksampler_3, 0),
+                vae=get_value_at_index(checkpointloadersimple_4, 2),
+            )
+
+            saveimage_23 = saveimage.save_images(
+                filename_prefix="ComfyUI", images=get_value_at_index(vaedecode_8, 0)
+            )
 
 def main():
     import_custom_nodes()
