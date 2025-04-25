@@ -305,7 +305,7 @@ def import_custom_nodes() -> None:
 _custom_nodes_imported = False
 _custom_path_added = False
 
-def gen_pic(positive_prompt: str, filename: str = "ComfyUI") -> None:
+def gen_pic(positive_prompt: str, filename: str = "ComfyUI", output_path:str = "../../../../art") -> None:
 
     _custom_nodes_imported = False
     _custom_path_added = False
@@ -332,7 +332,7 @@ def gen_pic(positive_prompt: str, filename: str = "ComfyUI") -> None:
 
         emptylatentimage = NODE_CLASS_MAPPINGS["EmptyLatentImage"]()
         emptylatentimage_5 = emptylatentimage.generate(
-            width=1024, height=1024, batch_size=1
+            width=1152, height=648, batch_size=1
         )
 
         loraloader = NODE_CLASS_MAPPINGS["LoraLoader"]()
@@ -386,7 +386,7 @@ def gen_pic(positive_prompt: str, filename: str = "ComfyUI") -> None:
             )
 
             image_save_23 = image_save.was_save_images(
-                output_path="../../../../art",
+                output_path=output_path,
                 filename_prefix=get_value_at_index(string_to_text_24, 0),
                 filename_delimiter="_",
                 filename_number_padding=4,
