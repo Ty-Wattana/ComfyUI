@@ -302,108 +302,124 @@ def import_custom_nodes() -> None:
     # Initializing custom nodes
     init_extra_nodes(init_custom_nodes=True)
 
+# Global flags for one-time initializations
 _custom_nodes_imported = False
 _custom_path_added = False
 
-def gen_pic(positive_prompt: str, filename: str = "ComfyUI", output_path:str = "../../../../art") -> None:
+# Cache frequently used models/nodes
+_checkpoint = None
+_loraloader = None
+_modelsampling = None
+_empty_latent = None
+_vae_decode = None
+_image_save = None
+_text_encode = None
 
-    _custom_nodes_imported = False
-    _custom_path_added = False
-
-    with ctx:
+def initialize_comfy():
+    """One-time ComfyUI initialization and model loading"""
+    global _custom_nodes_imported, _custom_path_added
+    global _checkpoint, _loraloader, _modelsampling, _empty_latent, _vae_decode, _image_save, _text_encode
+    
+    with contextlib.redirect_stdout(sys.stderr):  # Suppress initialization noise
         if not _custom_path_added:
             add_comfyui_directory_to_sys_path()
             add_extra_model_paths()
-
             _custom_path_added = True
 
         if not _custom_nodes_imported:
             import_custom_nodes()
-
             _custom_nodes_imported = True
 
         from nodes import NODE_CLASS_MAPPINGS
-    
-    with torch.inference_mode(), ctx:
-        checkpointloadersimple = NODE_CLASS_MAPPINGS["CheckpointLoaderSimple"]()
-        checkpointloadersimple_4 = checkpointloadersimple.load_checkpoint(
-            ckpt_name="theAllysMixXSDXL_v10.safetensors"
-        )
 
-        emptylatentimage = NODE_CLASS_MAPPINGS["EmptyLatentImage"]()
-        emptylatentimage_5 = emptylatentimage.generate(
-            width=1152, height=648, batch_size=1
-        )
+        # Load static components once
+        if _checkpoint is None:
+            checkpoint_cls = NODE_CLASS_MAPPINGS["CheckpointLoaderSimple"]
+            _checkpoint = checkpoint_cls().load_checkpoint(
+                ckpt_name="theAllysMixXSDXL_v10.safetensors"
+            )
 
-        loraloader = NODE_CLASS_MAPPINGS["LoraLoader"]()
-        loraloader_15 = loraloader.load_lora(
-            lora_name="lcm_lora_sdxl.safetensors",
-            strength_model=1,
-            strength_clip=1,
-            model=get_value_at_index(checkpointloadersimple_4, 0),
-            clip=get_value_at_index(checkpointloadersimple_4, 1),
-        )
+        if _loraloader is None:
+            lora_cls = NODE_CLASS_MAPPINGS["LoraLoader"]
+            _loraloader = lora_cls().load_lora(
+                lora_name="lcm_lora_sdxl.safetensors",
+                strength_model=1,
+                strength_clip=1,
+                model=get_value_at_index(_checkpoint, 0),
+                clip=get_value_at_index(_checkpoint, 1),
+            )
 
-        cliptextencode = NODE_CLASS_MAPPINGS["CLIPTextEncode"]()
-        cliptextencode_6 = cliptextencode.encode(
+        # Initialize reusable components
+        if _modelsampling is None:
+            _modelsampling = NODE_CLASS_MAPPINGS["ModelSamplingDiscrete"]()
+        if _empty_latent is None:
+            _empty_latent = NODE_CLASS_MAPPINGS["EmptyLatentImage"]()
+        if _vae_decode is None:
+            _vae_decode = NODE_CLASS_MAPPINGS["VAEDecode"]()
+        if _image_save is None:
+            _image_save = NODE_CLASS_MAPPINGS["Image Save"]()
+        if _text_encode is None:
+            _text_encode = NODE_CLASS_MAPPINGS["CLIPTextEncode"]()
+
+# Initialize once when module loads
+initialize_comfy()
+
+def gen_pic(positive_prompt: str, filename: str = "ComfyUI", output_path: str = "../../../../art"):
+    # Generate latent space dimensions based on 16:9 aspect ratio
+    width, height = 1152, 648  # 16:9 aspect ratio
+
+    with torch.inference_mode():
+        # These operations are fast and can stay in the loop
+        latent = _empty_latent.generate(width=width, height=height, batch_size=1)
+        
+        # Text encoding
+        positive_encoded = _text_encode.encode(
             text=positive_prompt,
-            clip=get_value_at_index(loraloader_15, 1),
+            clip=get_value_at_index(_loraloader, 1),
+        )
+        
+        negative_encoded = _text_encode.encode(
+            text="no human, no animal...",  # Keep your full negative prompt
+            clip=get_value_at_index(_loraloader, 1),
         )
 
-        cliptextencode_7 = cliptextencode.encode(
-            text="no human, no animal, no creature, no modern technology, no futuristic elements, no neon lights, no contemporary furniture, no plastic, no vehicles, no bright daylight, no sci-fi details, no electronic devices, no modern bar items, no overly clean or polished surfaces, no smooth metal, no characters, no modern drinks or glassware, no cityscape, no overly bright or colorful elements, no clutter or random objects, no modern clothing or accessories.",
-            clip=get_value_at_index(loraloader_15, 1),
+        # Model sampling setup
+        model = _modelsampling.patch(
+            sampling="eps", 
+            zsnr=False, 
+            model=get_value_at_index(_loraloader, 0)
         )
 
-        string_to_text = NODE_CLASS_MAPPINGS["String to Text"]()
-        string_to_text_24 = string_to_text.string_to_text(string=filename)
+        # Image generation
+        from nodes import NODE_CLASS_MAPPINGS
+        samples = NODE_CLASS_MAPPINGS["KSampler"]().sample(
+            seed=random.randint(1, 2**64),
+            steps=4,
+            cfg=1,
+            sampler_name="lcm",
+            scheduler="sgm_uniform",
+            denoise=1,
+            model=get_value_at_index(model, 0),
+            positive=get_value_at_index(positive_encoded, 0),
+            negative=get_value_at_index(negative_encoded, 0),
+            latent_image=get_value_at_index(latent, 0),
+        )
 
-        modelsamplingdiscrete = NODE_CLASS_MAPPINGS["ModelSamplingDiscrete"]()
-        ksampler = NODE_CLASS_MAPPINGS["KSampler"]()
-        vaedecode = NODE_CLASS_MAPPINGS["VAEDecode"]()
-        image_save = NODE_CLASS_MAPPINGS["Image Save"]()
-        for q in range(1):
-            modelsamplingdiscrete_16 = modelsamplingdiscrete.patch(
-                sampling="eps", zsnr=False, model=get_value_at_index(loraloader_15, 0)
-            )
+        # Decode and save
+        decoded = _vae_decode.decode(
+            samples=get_value_at_index(samples, 0),
+            vae=get_value_at_index(_checkpoint, 2),
+        )
 
-            ksampler_3 = ksampler.sample(
-                seed=random.randint(1, 2**64),
-                steps=4,
-                cfg=1,
-                sampler_name="lcm",
-                scheduler="sgm_uniform",
-                denoise=1,
-                model=get_value_at_index(modelsamplingdiscrete_16, 0),
-                positive=get_value_at_index(cliptextencode_6, 0),
-                negative=get_value_at_index(cliptextencode_7, 0),
-                latent_image=get_value_at_index(emptylatentimage_5, 0),
-            )
-
-            vaedecode_8 = vaedecode.decode(
-                samples=get_value_at_index(ksampler_3, 0),
-                vae=get_value_at_index(checkpointloadersimple_4, 2),
-            )
-
-            image_save_23 = image_save.was_save_images(
-                output_path=output_path,
-                filename_prefix=get_value_at_index(string_to_text_24, 0),
-                filename_delimiter="_",
-                filename_number_padding=4,
-                filename_number_start="false",
-                extension="jpg",
-                dpi=300,
-                quality=100,
-                optimize_image="true",
-                lossless_webp="false",
-                overwrite_mode="false",
-                show_history="false",
-                show_history_by_prefix="true",
-                embed_workflow="true",
-                show_previews="true",
-                images=get_value_at_index(vaedecode_8, 0),
-                prompt=PROMPT_DATA,
-            )
+        _image_save.was_save_images(
+            output_path=output_path,
+            filename_prefix=filename,
+            filename_delimiter="_",
+            filename_number_padding=4,
+            extension="jpg",
+            images=get_value_at_index(decoded, 0),
+            prompt=PROMPT_DATA,
+        )
 
 
 def main(*func_args, **func_kwargs):
