@@ -364,7 +364,7 @@ def initialize_comfy():
 # Initialize once when module loads
 initialize_comfy()
 
-def gen_pic(positive_prompt: str, filename: str = "ComfyUI", output_path: str = "../../../../art"):
+def gen_bg(positive_prompt: str, filename: str = "ComfyUI", output_path: str = "../../../../art"):
     # Generate latent space dimensions based on 16:9 aspect ratio
     width, height = 1152, 648  # 16:9 aspect ratio
 
